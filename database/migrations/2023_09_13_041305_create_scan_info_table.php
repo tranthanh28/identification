@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('reactions', function (Blueprint $table) {
+        Schema::create('scan_info', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('file_name');
-            $table->json('post_ids');
+            $table->json('list_fb_ids');
+            $table->integer('pass_day');
             $table->tinyInteger('status')->default(0)->comment("0:pending, 1: process, 2: done");
             $table->timestamps();
         });
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reactions');
+        Schema::dropIfExists('scan_info');
     }
 };

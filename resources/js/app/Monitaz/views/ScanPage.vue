@@ -2,7 +2,7 @@
   <div class="content-wrapper">
     <div class="row">
       <div class="col-sm-12 col-md-6">
-        <app-breadcrumb page-title="Reaction" :directory="$t('datatables')" :icon="'grid'"/>
+        <app-breadcrumb page-title="Scan Page" :directory="$t('datatables')" :icon="'grid'"/>
       </div>
       <div class="col-sm-12 col-md-6 breadcrumb-side-button">
         <div class="float-md-right mb-3 mb-sm-3 mb-md-0">
@@ -35,8 +35,16 @@
         </template>
       </el-table-column>
       <el-table-column
+          label="Pass Day"
+          prop="pass_day">
+      </el-table-column>
+      <el-table-column
           label="created"
           prop="created_at">
+      </el-table-column>
+      <el-table-column
+          label="updated"
+          prop="updated_at">
       </el-table-column>
       <el-table-column
           align="right">
@@ -70,15 +78,15 @@
     </el-pagination>
 
     <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible">
-      <DialogReactionForm :form="form" @submit="submit"></DialogReactionForm>
+      <DialogScanForm :form="form" @submit="submit"></DialogScanForm>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import DialogReactionForm from "@/app/Monitaz/Components/DialogReactionForm";
+import DialogScanForm from "@/app/Monitaz/Components/DialogScanForm";
 export default {
-  components: {DialogReactionForm},
+  components: {DialogScanForm},
   data() {
     return {
       titleDialog: "Create",
@@ -94,7 +102,8 @@ export default {
       form: {
         id: "",
         name: '',
-        post_ids: "",
+        pass_day: '',
+        list_fb_ids: "",
       },
       formLabelWidth: '120px',
       errors: "",
@@ -107,11 +116,11 @@ export default {
       this.page = urlParams.get('page');
     }
 
-    this.getListReactions(this.page)
+    this.getList(this.page)
   },
   methods: {
     handleCurrentChange(val) {
-      this.getListReactions(val)
+      this.getList(val)
     },
     filterTag(value, row) {
       return row.status == value;
@@ -119,9 +128,9 @@ export default {
     submit() {
       this.startLoading()
       if (this.form.id) {
-        this.handleUpdateReaction()
+        this.handleUpdate()
       } else {
-        this.handleAddReaction()
+        this.handleAdd()
       }
     },
     handleEdit(row) {
@@ -130,23 +139,26 @@ export default {
       this.dialogFormVisible = true
       this.form.id = row.id
       this.form.name = row.name
-      this.form.post_ids = ""
+      this.form.pass_day = row.pass_day
+      this.form.list_fb_ids = ""
     },
     handleCreate() {
       this.titleDialog = 'Create'
       this.dialogFormVisible = true
       this.form.id = null
       this.form.name = ''
-      this.form.post_ids = ""
+      this.form.pass_day = 60
+      this.form.list_fb_ids = ""
     },
-    handleAddReaction() {
-      axios.post('/api/reaction', this.form).then((response) => {
+    handleAdd() {
+      axios.post('/api/scan-page', this.form).then((response) => {
         this.stopLoading()
-        this.getListReactions()
+        this.getList()
         this.dialogFormVisible = false
         this.form = {
           name: '',
-          post_ids: "",
+          list_fb_ids: "",
+          pass_day: 60,
         }
       }).catch((error) => {
         this.stopLoading()
@@ -157,15 +169,16 @@ export default {
         this.errors = error.response.data.errors;
       })
     },
-    handleUpdateReaction() {
-      axios.put(`/api/reaction/${this.form.id}`, this.form).then((response) => {
+    handleUpdate() {
+      axios.put(`/api/scan-page/${this.form.id}`, this.form).then((response) => {
         this.stopLoading()
-        this.getListReactions()
+        this.getList()
         this.dialogFormVisible = false
         this.form = {
           id:'',
           name: '',
-          post_ids: "",
+          pass_day: '',
+          list_fb_ids: "",
         }
       }).catch((error) => {
         this.stopLoading()
@@ -180,7 +193,7 @@ export default {
       let dataDowload = {
         file_name: row.file_name
       }
-      axios.post('/api/reaction/export-excel', dataDowload, {
+      axios.post('/api/scan-page/export-excel', dataDowload, {
         responseType: 'blob'
       }).then((response) => {
         const url = URL.createObjectURL(new Blob([response.data], {
@@ -199,9 +212,9 @@ export default {
         });
       })
     },
-    getListReactions(page = 1) {
+    getList(page = 1) {
       this.startLoading()
-      axios.get(`/api/reaction?page=${page}`).then((response) => {
+      axios.get(`/api/scan-page?page=${page}`).then((response) => {
         this.stopLoading()
         this.data = response.data.data.data
         this.totalPages = response.data.data.total

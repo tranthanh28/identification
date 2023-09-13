@@ -42,3 +42,13 @@ if (mix.inProduction()) {
         devtool: 'inline-source-map'
     });
 }
+
+const path = require('path');
+
+mix.webpackConfig({
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, 'resources/js')
+        },
+    },
+});
