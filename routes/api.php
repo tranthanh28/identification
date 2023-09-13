@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'reaction'], function () {
     Route::get('/', [ReactionController::class, 'index']);
     // Route::get('/{id}', [ReactionController::class, 'show']);
+    Route::put('/{id}', [ReactionController::class, 'update']);
     Route::post('/', [ReactionController::class, 'store']);
     Route::post('/export-excel', [ReactionController::class, 'exportExcel']);
     // Route::post('/dowload', [ReactionController::class, 'index']);

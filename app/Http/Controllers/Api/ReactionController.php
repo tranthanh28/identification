@@ -13,7 +13,8 @@ class ReactionController extends Controller
 {
     public function index()
     {
-        $reaction = Reaction::all();
+        $reaction = Reaction::orderBy('created_at', 'DESC')->paginate(10);
+
         return response()->json([
             'status' => true,
             'message' => '',
@@ -48,20 +49,35 @@ class ReactionController extends Controller
 
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'required|email',
+            'post_ids' => 'required|string',
         ]);
 
-        $this->userRepository->update($user, $request->only('name', 'email'));
+        $postIds = preg_split("/\r\n|\n|\r/", $request->post_ids);
+        $fileName = $request->name . "_" . now()->timestamp.'.xlsx';
+        $data = [
+            'name' => $request->name,
+            'post_ids' => json_encode($postIds),
+            'file_name' => $fileName,
+            'status' => 0,
+        ];
 
+        $reaction = Reaction::findorFail($id);
+        $reaction->update($data);
+
+        $result = array_map(function ($item) {
+            return [$item];
+        }, $postIds);
+        Excel::store(new ReactionExport($result), $fileName);
         return response()->json([
             'status' => true,
-            'message' => 'User update Successfully',
-            'data' => $user
+            'message' => 'update successfully',
+            'data' => $reaction
         ], 200);
+
     }
 
     public function exportExcel(Request $request)
