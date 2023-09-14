@@ -15,6 +15,8 @@
         </div>
       </div>
     </div>
+    <FilterForm :formFilter="formFilter" @filter="filterSearchForm"></FilterForm>
+
     <el-table
         :data="data.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
         style="width: 100%">
@@ -85,10 +87,15 @@
 
 <script>
 import DialogScanForm from "@/app/Monitaz/Components/DialogScanForm";
+import FilterForm from "@/app/Monitaz/Components/FilterForm";
 export default {
-  components: {DialogScanForm},
+  components: {DialogScanForm, FilterForm},
   data() {
     return {
+      formFilter: {
+        name: '',
+        status: ''
+      },
       titleDialog: "Create",
       //Pagination
       page:1,
@@ -119,6 +126,11 @@ export default {
     this.getList(this.page)
   },
   methods: {
+    filterSearchForm() {
+      let status = this.formFilter.status.join(",");
+      let search = this.formFilter.name;
+      this.getList(this.page, status, search)
+    },
     handleCurrentChange(val) {
       this.getList(val)
     },
@@ -212,9 +224,15 @@ export default {
         });
       })
     },
-    getList(page = 1) {
+    getList(page = 1, status = '', search = '') {
       this.startLoading()
-      axios.get(`/api/scan-group?page=${page}`).then((response) => {
+      if (status) {
+        status = `&status=${status}`
+      }
+      if (search) {
+        search = `&search=${search}`
+      }
+      axios.get(`/api/scan-group?page=${page}${status}${search}`).then((response) => {
         this.stopLoading()
         this.data = response.data.data.data
         this.totalPages = response.data.data.total

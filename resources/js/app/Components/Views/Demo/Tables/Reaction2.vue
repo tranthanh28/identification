@@ -15,6 +15,8 @@
         </div>
       </div>
     </div>
+    <FilterForm :formFilter="formFilter" @filter="filterSearchForm"></FilterForm>
+
     <el-table
         :data="data.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
         style="width: 100%">
@@ -77,10 +79,15 @@
 
 <script>
 import DialogReactionForm from "@/app/Monitaz/Components/DialogReactionForm";
+import FilterForm from "@/app/Monitaz/Components/FilterForm";
 export default {
-  components: {DialogReactionForm},
+  components: {DialogReactionForm, FilterForm},
   data() {
     return {
+      formFilter: {
+        name: '',
+        status: ''
+      },
       titleDialog: "Create",
       //Pagination
       page:1,
@@ -110,6 +117,11 @@ export default {
     this.getListReactions(this.page)
   },
   methods: {
+    filterSearchForm() {
+      let status = this.formFilter.status.join(",");
+      let search = this.formFilter.name;
+      this.getListReactions(this.page, status, search)
+    },
     handleCurrentChange(val) {
       this.getListReactions(val)
     },
@@ -199,9 +211,15 @@ export default {
         });
       })
     },
-    getListReactions(page = 1) {
+    getListReactions(page = 1, status = '', search = '') {
       this.startLoading()
-      axios.get(`/api/reaction?page=${page}`).then((response) => {
+      if (status) {
+        status = `&status=${status}`
+      }
+      if (search) {
+        search = `&search=${search}`
+      }
+      axios.get(`/api/reaction?page=${page}${status}${search}`).then((response) => {
         this.stopLoading()
         this.data = response.data.data.data
         this.totalPages = response.data.data.total

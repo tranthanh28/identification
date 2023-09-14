@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Exports\ReactionExport;
+use App\Filters\App\Monitaz\Reaction\ReactionFilter;
 use App\Http\Controllers\Controller;
 use App\Models\Monitaz\ScanGroup\ScanGroup;
 use Illuminate\Http\Request;
@@ -11,9 +12,15 @@ use Illuminate\Support\Facades\Storage;
 
 class ScanGroupController extends Controller
 {
+    public function __construct(ReactionFilter $filter)
+    {
+        $this->filter = $filter;
+    }
+
     public function index()
     {
-        $reaction = ScanGroup::orderBy('created_at', 'DESC')->paginate(10);
+        $reaction = ScanGroup::filters($this->filter)
+            ->latest()->paginate(10);
 
         return response()->json([
             'status' => true,
