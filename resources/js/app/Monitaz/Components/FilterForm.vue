@@ -1,7 +1,7 @@
 <template>
   <el-form :inline="true" :model="formFilter" class="demo-form-inline">
     <el-form-item label="Search">
-      <el-input v-model="formFilter.name" placeholder="Search name"></el-input>
+      <el-input v-model="formFilter.search" placeholder="Search name"></el-input>
     </el-form-item>
     <el-form-item label="Status">
       <el-select v-model="formFilter.status" multiple placeholder="">
@@ -22,8 +22,8 @@ export default {
       type: Object,
       default() {
         return {
-          name: '',
-          status: ''
+          search: '',
+          status: []
         }
       }
     }

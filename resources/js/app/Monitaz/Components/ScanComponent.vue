@@ -2,7 +2,7 @@
   <div class="content-wrapper">
     <div class="row">
       <div class="col-sm-12 col-md-6">
-        <app-breadcrumb page-title="Reaction" :directory="$t('datatables')" :icon="'grid'"/>
+        <app-breadcrumb :page-title="title" :directory="$t('datatables')" :icon="'grid'"/>
       </div>
       <div class="col-sm-12 col-md-6 breadcrumb-side-button">
         <div class="float-md-right mb-3 mb-sm-3 mb-md-0">
@@ -37,8 +37,16 @@
         </template>
       </el-table-column>
       <el-table-column
+          label="Pass Day"
+          prop="pass_day">
+      </el-table-column>
+      <el-table-column
           label="created"
           prop="created_at">
+      </el-table-column>
+      <el-table-column
+          label="updated"
+          prop="updated_at">
       </el-table-column>
       <el-table-column
           align="right">
@@ -72,18 +80,28 @@
     </el-pagination>
 
     <el-dialog :title="titleDialog" :visible.sync="dialogFormVisible">
-      <DialogReactionForm :form="form" @submit="submit"></DialogReactionForm>
+      <DialogScanForm :form="form" @submit="submit"></DialogScanForm>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import DialogReactionForm from "@/app/Monitaz/Components/DialogReactionForm";
+import DialogScanForm from "@/app/Monitaz/Components/DialogScanForm";
 import FilterForm from "@/app/Monitaz/Components/FilterForm";
 import StringMethod from "@/core/helpers/string/StringMethod";
 
 export default {
-  components: {DialogReactionForm, FilterForm},
+  components: {DialogScanForm, FilterForm},
+  props: {
+    title: {
+      type: String,
+      require: true
+    },
+    urlApi: {
+      type: String,
+      require: true
+    }
+  },
   data() {
     return {
       formFilter: {
@@ -97,7 +115,7 @@ export default {
       },
       titleDialog: "Create",
       //Pagination
-      page:1,
+      page: 1,
       totalPages: 0,
       perPage: 10,
       currentPage: 1,
@@ -108,7 +126,8 @@ export default {
       form: {
         id: "",
         name: '',
-        post_ids: "",
+        pass_day: '',
+        list_fb_ids: "",
       },
       formLabelWidth: '120px',
       errors: "",
@@ -120,7 +139,6 @@ export default {
     if (urlParams.has('page')) {
       this.page = urlParams.get('page');
     }
-
     if (urlParams.has('status')) {
       this.formFilter.status = urlParams.get('status').split(",");
     }
@@ -131,10 +149,11 @@ export default {
     this.filterSearchForm(this.page)
   },
   methods: {
-    filterSearchForm(page = null) {
+    filterSearchForm(page) {
       if (page == null) {
         this.page = 1
       }
+      this.page = 1
       let status = this.formFilter.status.join(",");
       let search = this.formFilter.search;
       this.formWindowUrl.search = search;
@@ -143,14 +162,14 @@ export default {
       let pageTitle = document.title,
           query = StringMethod.objectToQueryString(this.formWindowUrl);
       window.history.pushState("", pageTitle, `?${query}`);
-      this.getListReactions(this.page, status, search)
+      this.getList(this.page, status, search)
     },
     handleCurrentChange(val) {
       this.formWindowUrl.page = val
       let pageTitle = document.title,
           query = StringMethod.objectToQueryString(this.formWindowUrl);
       window.history.pushState("", pageTitle, `?${query}`);
-      this.getListReactions(val)
+      this.getList(val)
     },
     filterTag(value, row) {
       return row.status == value;
@@ -158,9 +177,9 @@ export default {
     submit() {
       this.startLoading()
       if (this.form.id) {
-        this.handleUpdateReaction()
+        this.handleUpdate()
       } else {
-        this.handleAddReaction()
+        this.handleAdd()
       }
     },
     handleEdit(row) {
@@ -169,23 +188,26 @@ export default {
       this.dialogFormVisible = true
       this.form.id = row.id
       this.form.name = row.name
-      this.form.post_ids = ""
+      this.form.pass_day = row.pass_day
+      this.form.list_fb_ids = ""
     },
     handleCreate() {
       this.titleDialog = 'Create'
       this.dialogFormVisible = true
       this.form.id = null
       this.form.name = ''
-      this.form.post_ids = ""
+      this.form.pass_day = 60
+      this.form.list_fb_ids = ""
     },
-    handleAddReaction() {
-      axios.post('/api/reaction', this.form).then((response) => {
+    handleAdd() {
+      axios.post(this.urlApi, this.form).then((response) => {
         this.stopLoading()
-        this.getListReactions()
+        this.getList()
         this.dialogFormVisible = false
         this.form = {
           name: '',
-          post_ids: "",
+          list_fb_ids: "",
+          pass_day: 60,
         }
       }).catch((error) => {
         this.stopLoading()
@@ -196,15 +218,16 @@ export default {
         this.errors = error.response.data.errors;
       })
     },
-    handleUpdateReaction() {
-      axios.put(`/api/reaction/${this.form.id}`, this.form).then((response) => {
+    handleUpdate() {
+      axios.put(`${this.urlApi}/${this.form.id}`, this.form).then((response) => {
         this.stopLoading()
-        this.getListReactions()
+        this.getList()
         this.dialogFormVisible = false
         this.form = {
-          id:'',
+          id: '',
           name: '',
-          post_ids: "",
+          pass_day: '',
+          list_fb_ids: "",
         }
       }).catch((error) => {
         this.stopLoading()
@@ -219,7 +242,7 @@ export default {
       let dataDowload = {
         file_name: row.file_name
       }
-      axios.post('/api/reaction/export-excel', dataDowload, {
+      axios.post(`${this.urlApi}/export-excel`, dataDowload, {
         responseType: 'blob'
       }).then((response) => {
         const url = URL.createObjectURL(new Blob([response.data], {
@@ -238,7 +261,7 @@ export default {
         });
       })
     },
-    getListReactions(page = 1, status = '', search = '') {
+    getList(page = 1, status = '', search = '') {
       this.startLoading()
       if (status) {
         status = `&status=${status}`
@@ -246,7 +269,7 @@ export default {
       if (search) {
         search = `&search=${search}`
       }
-      axios.get(`/api/reaction?page=${page}${status}${search}`).then((response) => {
+      axios.get(`${this.urlApi}?page=${page}${status}${search}`).then((response) => {
         this.stopLoading()
         this.data = response.data.data.data
         this.totalPages = response.data.data.total
