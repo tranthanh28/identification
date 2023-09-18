@@ -9,6 +9,7 @@ use App\Models\Monitaz\ScanGroup\ScanGroup;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use App\Jobs\ScanGroup as ScanGroupJob;
 
 class ScanGroupController extends Controller
 {
@@ -33,44 +34,42 @@ class ScanGroupController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'list_fb_ids' => 'required|string',
+            'content_file' => 'required|string',
             'pass_day' => 'required|numeric',
         ]);
-        $postIds = preg_split("/\r\n|\n|\r/", $request->list_fb_ids);
+        $keywords = preg_split("/\r\n|\n|\r/", $request->content_file);
         $fileName = $request->name . "_" . now()->timestamp.'.xlsx';
         $data = [
             'name' => $request->name,
-            'list_fb_ids' => json_encode($postIds),
+            'content_file' => json_encode($keywords),
             'file_name' => $fileName,
             'pass_day' => $request->pass_day,
         ];
 
         $reaction = ScanGroup::create($data);
-        $result = array_map(function ($item) {
-            return [$item];
-        }, $postIds);
-        Excel::store(new ReactionExport($result), $fileName);
+
+        ScanGroupJob::dispatch($keywords, $fileName, $reaction);
+
         return response()->json([
             'status' => true,
             'message' => 'created successfully',
             'data' => $reaction
         ], 200);
-
     }
 
     public function update(Request $request, $id)
     {
         $this->validate($request, [
             'name' => 'required',
-            'list_fb_ids' => 'required|string',
+            'content_file' => 'required|string',
             'pass_day' => 'required|numeric',
         ]);
 
-        $postIds = preg_split("/\r\n|\n|\r/", $request->list_fb_ids);
+        $keywords = preg_split("/\r\n|\n|\r/", $request->content_file);
         $fileName = $request->name . "_" . now()->timestamp.'.xlsx';
         $data = [
             'name' => $request->name,
-            'list_fb_ids' => json_encode($postIds),
+            'content_file' => json_encode($keywords),
             'file_name' => $fileName,
             'pass_day' => $request->pass_day,
             'status' => 0,
@@ -79,10 +78,8 @@ class ScanGroupController extends Controller
         $reaction = ScanGroup::findorFail($id);
         $reaction->update($data);
 
-        $result = array_map(function ($item) {
-            return [$item];
-        }, $postIds);
-        Excel::store(new ReactionExport($result), $fileName);
+        ScanGroupJob::dispatch($keywords, $fileName, $reaction);
+
         return response()->json([
             'status' => true,
             'message' => 'update successfully',
@@ -96,6 +93,6 @@ class ScanGroupController extends Controller
         $this->validate($request, [
             'file_name' => 'required'
         ]);
-        return Storage::download($request->file_name);
+        return Storage::download('/groups_xlsx/' . $request->file_name);
     }
 }

@@ -59,7 +59,7 @@
         <template slot-scope="scope">
           <el-button
               size="mini"
-              :disabled="scope.row.status == 1"
+              :disabled="scope.row.status != 2"
               @click="handleEdit(scope.row)"><i class="el-icon-edit"></i>Edit
           </el-button>
           <el-button
@@ -127,7 +127,7 @@ export default {
         id: "",
         name: '',
         pass_day: '',
-        list_fb_ids: "",
+        content_file: "",
       },
       formLabelWidth: '120px',
       errors: "",
@@ -189,7 +189,7 @@ export default {
       this.form.id = row.id
       this.form.name = row.name
       this.form.pass_day = row.pass_day
-      this.form.list_fb_ids = ""
+      this.form.content_file = ""
     },
     handleCreate() {
       this.titleDialog = 'Create'
@@ -197,7 +197,7 @@ export default {
       this.form.id = null
       this.form.name = ''
       this.form.pass_day = 60
-      this.form.list_fb_ids = ""
+      this.form.content_file = ""
     },
     handleAdd() {
       axios.post(this.urlApi, this.form).then((response) => {
@@ -206,7 +206,7 @@ export default {
         this.dialogFormVisible = false
         this.form = {
           name: '',
-          list_fb_ids: "",
+          content_file: "",
           pass_day: 60,
         }
       }).catch((error) => {
@@ -227,7 +227,7 @@ export default {
           id: '',
           name: '',
           pass_day: '',
-          list_fb_ids: "",
+          content_file: "",
         }
       }).catch((error) => {
         this.stopLoading()

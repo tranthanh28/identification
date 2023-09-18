@@ -72,7 +72,7 @@ export default {
       reader.readAsText(this.uploadFile.raw)
       reader.onload = async (e) => {
         try {
-          this.form.list_fb_ids = e.target.result
+          this.form.content_file = e.target.result
         } catch (err) {
           console.log(`Load JSON file error: ${err.message}`)
         }

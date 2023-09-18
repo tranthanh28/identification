@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('file_name');
-            $table->json('list_fb_ids');
+            $table->json('content_file');
             $table->integer('pass_day');
             $table->tinyInteger('status')->default(0)->comment("0:pending, 1: process, 2: done");
             $table->timestamps();

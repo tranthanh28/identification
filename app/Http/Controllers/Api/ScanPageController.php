@@ -33,14 +33,14 @@ class ScanPageController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'list_fb_ids' => 'required|string',
+            'content_file' => 'required|string',
             'pass_day' => 'required|numeric',
         ]);
-        $postIds = preg_split("/\r\n|\n|\r/", $request->list_fb_ids);
+        $postIds = preg_split("/\r\n|\n|\r/", $request->content_file);
         $fileName = $request->name . "_" . now()->timestamp.'.xlsx';
         $data = [
             'name' => $request->name,
-            'list_fb_ids' => json_encode($postIds),
+            'content_file' => json_encode($postIds),
             'file_name' => $fileName,
             'pass_day' => $request->pass_day,
         ];
@@ -62,15 +62,15 @@ class ScanPageController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'list_fb_ids' => 'required|string',
+            'content_file' => 'required|string',
             'pass_day' => 'required|numeric',
         ]);
 
-        $postIds = preg_split("/\r\n|\n|\r/", $request->list_fb_ids);
+        $postIds = preg_split("/\r\n|\n|\r/", $request->content_file);
         $fileName = $request->name . "_" . now()->timestamp.'.xlsx';
         $data = [
             'name' => $request->name,
-            'list_fb_ids' => json_encode($postIds),
+            'content_file' => json_encode($postIds),
             'file_name' => $fileName,
             'pass_day' => $request->pass_day,
             'status' => 0,
