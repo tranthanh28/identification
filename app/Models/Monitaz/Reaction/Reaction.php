@@ -12,10 +12,17 @@ class Reaction extends AppModel
 {
     protected $fillable = ['name', 'created_at', 'status', 'post_ids', 'file_name'];
 
-    protected $casts = [
-        'created_at' => 'datetime:Y-m-d H:m',
-        'updated_at' => 'datetime:Y-m-d H:m',
-    ];
 
     protected $table = "reactions";
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  $date
+     * @return string
+     */
+    protected function serializeDate($date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

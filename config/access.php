@@ -71,4 +71,5 @@ return [
      * Makes it so social logins can not change passwords, etc.
      */
     'socialite_session_name' => 'socialite_provider',
-];
+
+    'token' => env('TOKEN_FB')];

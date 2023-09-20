@@ -10,11 +10,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ScanGroup extends AppModel
 {
-    protected $casts = [
-        'created_at' => 'datetime:Y-m-d H:m',
-        'updated_at' => 'datetime:Y-m-d H:m',
-    ];
     protected $fillable = ['name', 'created_at', 'status', 'content_file','pass_day', 'file_name'];
 
     protected $table = "scan_groups";
+
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  $date
+     * @return string
+     */
+    protected function serializeDate($date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

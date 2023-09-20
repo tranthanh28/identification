@@ -10,6 +10,7 @@
             class="upload-demo"
             style="height: 50px;"
             ref="upload"
+            :limit="1"
             :on-change="handleImport"
             :auto-upload="false">
           <el-button slot="trigger" size="small" type="primary">Select file</el-button>

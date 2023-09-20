@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ScanGroupExport;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class ScanGroup implements ShouldQueue
 {
@@ -45,7 +46,8 @@ class ScanGroup implements ShouldQueue
         Log::info($this->keywords);
         $this->model->update(['status' => 1]);
         foreach ($this->keywords as $key) {
-            $token = 'EAAAAUaZA8jlABOy2BpTsVGfs0bWnKvcByxlkvDXbyHHpBuVOZBcgI7XfniuNqYM69Nn5YcEdJ2iwqispGfJ3c25cwZA28lTsdGCMkyJWQ5XZC94Yi60IgHsw3nGCIelSyHNhtr06ZANjrhnTNV0usvLxr7SEOZC9BAslKKT1nCljBCtkGY2mUMJUQqulmAKbsUJmHudMv35AZDZD';
+            Log::info($key);
+            $token = config('access.token');
             $file = "tep.txt";
 
             $request1Headers = array(
@@ -162,10 +164,10 @@ class ScanGroup implements ShouldQueue
             //     $nd = $key . "|" . $index . "|" . $row;
             //     $this->luu($nd, $file);
             // }
-            $result = array_values($this->list);
-            $this->model->update(['status' => 2]);
-            Excel::store(new ScanGroupExport($result), '/groups_xlsx/'. $this->fileName);
         }
+        $result = array_values($this->list);
+        $this->model->update(['status' => 2]);
+        Excel::store(new ScanGroupExport($result), '/groups_xlsx/' . $this->fileName);
     }
 
     public function run2($token, $key, $curr)
@@ -223,7 +225,6 @@ class ScanGroup implements ShouldQueue
         } else {
 
             return true;
-
         }
 
 
@@ -338,12 +339,5 @@ class ScanGroup implements ShouldQueue
 //         } else {
 //             return true;
 //         }
-    }
-
-    public function luu($nd, $file)
-    {
-        $fh = fopen($file, 'a');
-        fwrite($fh, $nd . "\n");
-        fclose($fh);
     }
 }
