@@ -94,3 +94,6 @@ export const REACTION_DATA = 'reaction/crud';
 export const REACTION_EXPORT = 'export-crud';
 export const REACTION_SEARCH_SELECT = '/datatable/name';
 export const REACTION_SERVER_SEARCH_SELECT = '/datatable/serverside/selectable-name';
+
+//STORE EXCEL
+export const STORE_EXCEL = 'http://123.30.186.234/';

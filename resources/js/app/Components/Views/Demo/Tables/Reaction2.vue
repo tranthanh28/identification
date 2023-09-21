@@ -55,9 +55,11 @@
               @click="handleEdit(scope.row)"><i class="el-icon-edit"></i>Edit
           </el-button>
           <el-button
-              :disabled="scope.row.status != 2"
-              size="mini"
-              @click="handleDowload(scope.row)"><i class="el-icon-download"></i>Dowload
+              v-if="scope.row.status == 2"
+              size="mini">
+          <i class="el-icon-download">
+          </i>
+            <a :href="getExcel(scope.row)" download>Download</a>
           </el-button>
         </template>
       </el-table-column>
@@ -81,6 +83,9 @@
 import DialogReactionForm from "@/app/Monitaz/Components/DialogReactionForm";
 import FilterForm from "@/app/Monitaz/Components/FilterForm";
 import StringMethod from "@/core/helpers/string/StringMethod";
+import {
+  STORE_EXCEL
+}  from '@/app/Config/ApiUrl';
 
 export default {
   components: {DialogReactionForm, FilterForm},
@@ -131,6 +136,10 @@ export default {
     this.filterSearchForm(this.page)
   },
   methods: {
+    getExcel(row)
+    {
+      return STORE_EXCEL + 'report_update_reaction_v2/'+ row.file_name
+    },
     filterSearchForm(page = null) {
       if (page == null) {
         this.page = 1
@@ -261,3 +270,9 @@ export default {
 
 }
 </script>
+<style scoped>
+a {
+  color: #606266 !important;
+  text-decoration: none !important;
+}
+</style>
