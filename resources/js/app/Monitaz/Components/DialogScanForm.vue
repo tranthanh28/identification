@@ -4,10 +4,10 @@
       <el-form-item label="Name" :label-width="formLabelWidth" prop="name">
         <el-input v-model="form.name" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="Pass day" :label-width="formLabelWidth" prop="pass_day">
-        <el-input v-model="form.pass_day" autocomplete="off"></el-input>
-        <div id="comment">(*) * ngày hiện tại - pass_day => dữ liệu lấy bắt đầu từ khoảng đấy *</div>
-      </el-form-item>
+<!--      <el-form-item label="Pass day" :label-width="formLabelWidth" prop="pass_day">-->
+<!--        <el-input v-model="form.pass_day" autocomplete="off"></el-input>-->
+<!--        <div id="comment">(*) * ngày hiện tại - pass_day => dữ liệu lấy bắt đầu từ khoảng đấy *</div>-->
+<!--      </el-form-item>-->
       <el-form-item label="File" :label-width="formLabelWidth" style="margin-top: 45px">
         <el-upload
             action=""

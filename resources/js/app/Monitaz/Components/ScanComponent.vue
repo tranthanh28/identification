@@ -36,10 +36,10 @@
           <el-tag v-if="scope.row.status == 0" type="warning">Pending</el-tag>
         </template>
       </el-table-column>
-      <el-table-column
-          label="Pass Day"
-          prop="pass_day">
-      </el-table-column>
+<!--      <el-table-column-->
+<!--          label="Pass Day"-->
+<!--          prop="pass_day">-->
+<!--      </el-table-column>-->
       <el-table-column
           label="created"
           prop="created_at">

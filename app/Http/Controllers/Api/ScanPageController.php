@@ -6,6 +6,7 @@ use App\Exports\ReactionExport;
 use App\Filters\App\Monitaz\Reaction\ReactionFilter;
 use App\Http\Controllers\Controller;
 use App\Models\Monitaz\ScanPage\ScanPage;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
@@ -19,13 +20,13 @@ class ScanPageController extends Controller
 
     public function index()
     {
-        $reaction = ScanPage::filters($this->filter)
+        $scanPage = ScanPage::filters($this->filter)
             ->latest()->paginate(10);
 
         return response()->json([
             'status' => true,
             'message' => '',
-            'data' => $reaction
+            'data' => $scanPage
         ], 200);
 
     }
@@ -37,7 +38,8 @@ class ScanPageController extends Controller
             'pass_day' => 'required|numeric',
         ]);
         $postIds = preg_split("/\r\n|\n|\r/", $request->content_file);
-        $fileName = $request->name . "_" . now()->timestamp.'.xlsx';
+        $date = Carbon::now()->format("Y_m_d_H_i_s");
+        $fileName = $request->name . "_" . $date .'.xlsx';
         $data = [
             'name' => $request->name,
             'content_file' => json_encode($postIds),
@@ -45,7 +47,7 @@ class ScanPageController extends Controller
             'pass_day' => $request->pass_day,
         ];
 
-        $reaction = ScanPage::create($data);
+        $scanPage = ScanPage::create($data);
         $result = array_map(function ($item) {
             return [$item];
         }, $postIds);
@@ -53,7 +55,7 @@ class ScanPageController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'created successfully',
-            'data' => $reaction
+            'data' => $scanPage
         ], 200);
 
     }
@@ -65,9 +67,17 @@ class ScanPageController extends Controller
             'content_file' => 'required|string',
             'pass_day' => 'required|numeric',
         ]);
+        $scanPage = ScanPage::findorFail($id);
+        if ($scanPage->status == 1) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Update failed (status == 1)'
+            ], 400);
+        }
 
         $postIds = preg_split("/\r\n|\n|\r/", $request->content_file);
-        $fileName = $request->name . "_" . now()->timestamp.'.xlsx';
+        $date = Carbon::now()->format("Y_m_d_H_i_s");
+        $fileName = $request->name . "_" . $date .'.xlsx';
         $data = [
             'name' => $request->name,
             'content_file' => json_encode($postIds),
@@ -76,8 +86,7 @@ class ScanPageController extends Controller
             'status' => 0,
         ];
 
-        $reaction = ScanPage::findorFail($id);
-        $reaction->update($data);
+        $scanPage->update($data);
 
         $result = array_map(function ($item) {
             return [$item];
@@ -86,7 +95,7 @@ class ScanPageController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'update successfully',
-            'data' => $reaction
+            'data' => $scanPage
         ], 200);
 
     }

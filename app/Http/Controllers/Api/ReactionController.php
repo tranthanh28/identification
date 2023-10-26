@@ -38,18 +38,14 @@ class ReactionController extends Controller
             'post_ids' => 'required|string',
         ]);
         $postIds = preg_split("/\r\n|\n|\r/", $request->post_ids);
-        $fileName = $request->name . "_" . now()->timestamp.'.xlsx';
         $data = [
             'name' => $request->name,
             'post_ids' => json_encode($postIds),
-            'file_name' => $fileName,
+            'file_name' => '',
         ];
 
+
         $reaction = Reaction::create($data);
-        $result = array_map(function ($item) {
-            return [$item];
-        }, $postIds);
-        Excel::store(new ReactionExport($result), $fileName);
         return response()->json([
             'status' => true,
             'message' => 'created successfully',
@@ -65,22 +61,23 @@ class ReactionController extends Controller
             'post_ids' => 'required|string',
         ]);
 
+        $reaction = Reaction::findorFail($id);
+        if ($reaction->status == 1) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Update failed (status == 1)'
+            ], 400);
+        }
+
         $postIds = preg_split("/\r\n|\n|\r/", $request->post_ids);
-        $fileName = $request->name . "_" . now()->timestamp.'.xlsx';
         $data = [
             'name' => $request->name,
             'post_ids' => json_encode($postIds),
-            'file_name' => $fileName,
+            'file_name' => '',
             'status' => 0,
         ];
 
-        $reaction = Reaction::findorFail($id);
         $reaction->update($data);
-
-        $result = array_map(function ($item) {
-            return [$item];
-        }, $postIds);
-        Excel::store(new ReactionExport($result), $fileName);
         return response()->json([
             'status' => true,
             'message' => 'update successfully',
