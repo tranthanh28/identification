@@ -172,6 +172,7 @@ class UserService extends BaseService
     {
         /**@var $user User*/
         $user = $this->model::findByEmail( request()->get('email') );
+        \Log::info($user);
 
         BeforeLogin::new(true)
             ->setModel($user)

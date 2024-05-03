@@ -21,3 +21,7 @@ Route::group(['prefix' => 'scan-group'], function () {
 Route::group(['prefix' => 'scan-page'], function () {
     Route::get('/', [ScanPageController::class, 'index'])->name('page.index');
 });
+
+Route::group(['prefix' => 'identification'], function () {
+    Route::get('/', [\App\Http\Controllers\Monitaz\IdentificationController::class, 'index'])->name('identification.index');
+});

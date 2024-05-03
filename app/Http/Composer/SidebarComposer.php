@@ -42,6 +42,12 @@ class SidebarComposer
                 'url' => request()->root() . '/users-and-roles',
                 'permission' => true,
             ],
+            [
+                'icon' => 'codepen',
+                'name' => "Identification",
+                'url' => request()->root() . '/identification',
+                'permission' => "true",
+            ],
         ];
 
 

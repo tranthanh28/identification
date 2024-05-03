@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\ReactionController;
 use App\Http\Controllers\Api\ScanInfoController;
 use App\Http\Controllers\Api\ScanGroupController;
 use App\Http\Controllers\Api\ScanPageController;
+use App\Http\Controllers\Api\IdentificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'reaction'], function () {
@@ -56,6 +57,15 @@ Route::group(['prefix' => 'scan-group'], function () {
     Route::put('/{id}', [ScanGroupController::class, 'update']);
     Route::post('/', [ScanGroupController::class, 'store']);
     Route::post('/export-excel', [ScanGroupController::class, 'exportExcel']);
+    // Route::post('/dowload', [ScanGroupController::class, 'index']);
+});
+
+Route::group(['prefix' => 'identification'], function () {
+    Route::get('/', [IdentificationController::class, 'index']);
+    // Route::get('/{id}', [IdentificationController::class, 'show']);
+    Route::put('/{id}', [IdentificationController::class, 'update']);
+    Route::post('/', [IdentificationController::class, 'store']);
+    Route::post('/export-excel', [IdentificationController::class, 'exportExcel']);
     // Route::post('/dowload', [ScanGroupController::class, 'index']);
 });
 

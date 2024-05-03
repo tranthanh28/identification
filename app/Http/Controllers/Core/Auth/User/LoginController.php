@@ -45,6 +45,7 @@ class LoginController extends Controller
                 $route['route_params']
             );
         } catch (\Exception $exception) {
+            \Log::info($exception);
             return response()->json([
                 'message' => $exception instanceof ModelNotFoundException ? trans('default.resource_not_found', ['resource' => trans('default.user')]) : $exception->getMessage()
             ], 400);
