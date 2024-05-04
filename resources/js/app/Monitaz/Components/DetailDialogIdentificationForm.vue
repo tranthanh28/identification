@@ -219,12 +219,12 @@
             </el-row>
           </div>
         </el-card>
-        <div class="info-user-fb group-info" v-if="info_user_tiktok">
-          <div class="header-info-user-fb d-flex align-content-center">
-            <el-avatar :size="30" src="https://empty" @error="errorHandler">
+        <div class="info-user-tiktok group-info" v-if="!isObjectEmpty(tiktok_user_information)">
+          <div class="header-info-user d-flex align-content-center">
+            <el-avatar :size="30" :src="tiktok_user_information?.avatar" @error="errorHandler">
               <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
             </el-avatar>
-            <div style="padding-left: 10px">Nguyễn Văn A</div>
+            <div style="padding-left: 10px">{{tiktok_user_information?.tiktok_nickname}}</div>
 
           </div>
           <el-card shadow="hover" style="border-radius: 30px; padding-top: 5px; background: #d3dce6;">
@@ -234,7 +234,7 @@
                   <div>Phone</div>
                 </el-col>
                 <el-col>
-                  <div>: Test</div>
+                  <div>: {{ form.phone }}</div>
                 </el-col>
               </el-row>
             </div>
@@ -244,17 +244,7 @@
                   <div>Username</div>
                 </el-col>
                 <el-col>
-                  <div>: Test</div>
-                </el-col>
-              </el-row>
-            </div>
-            <div class="text item">
-              <el-row type="flex">
-                <el-col :span="12">
-                  <div>Cửa hàng</div>
-                </el-col>
-                <el-col>
-                  <div>: Test</div>
+                  <div>: {{ form.tiktok_unique }}</div>
                 </el-col>
               </el-row>
             </div>
@@ -270,7 +260,7 @@
                   <div>Shop Id</div>
                 </el-col>
                 <el-col>
-                  <div>: Test</div>
+                  <div>: {{information_shop?.seller_id}}</div>
                 </el-col>
               </el-row>
             </div>
@@ -280,7 +270,7 @@
                   <div>Tên cửa hàng</div>
                 </el-col>
                 <el-col>
-                  <div>: Test</div>
+                  <div>: {{information_shop?.seller_name}}</div>
                 </el-col>
               </el-row>
             </div>
@@ -290,7 +280,7 @@
                   <div>Tổng sản phẩm</div>
                 </el-col>
                 <el-col>
-                  <div>: Test</div>
+                  <div>: {{information_shop?.product_count}}</div>
                 </el-col>
               </el-row>
             </div>
@@ -300,7 +290,7 @@
                   <div>Sản phẩm đã bán</div>
                 </el-col>
                 <el-col>
-                  <div>: Test</div>
+                  <div>: {{information_shop?.sold_count}}</div>
                 </el-col>
               </el-row>
             </div>
@@ -310,7 +300,7 @@
                   <div>Điểm đánh giá</div>
                 </el-col>
                 <el-col>
-                  <div>: Test</div>
+                  <div>: {{information_shop?.shop_rating}}</div>
                 </el-col>
               </el-row>
             </div>
@@ -320,7 +310,7 @@
                   <div>Số đánh giá</div>
                 </el-col>
                 <el-col>
-                  <div>: Test</div>
+                  <div>: {{information_shop?.review_count}}</div>
                 </el-col>
               </el-row>
             </div>
@@ -335,7 +325,7 @@
                 <div class="header-item d-flex justify-content-between">
                   <div class="left-header-item d-flex justify-content-start">
                     <div class="avatar-review">
-                      <el-avatar :size="40" src="E:\backpack\marketplace_version\development\resources\js\app\images\user.png"></el-avatar>
+                      <el-avatar :size="40"></el-avatar>
                     </div>
                     <div class="name-user-review">
                       <div>{{ item.review_name }}</div>
@@ -394,15 +384,15 @@ export default {
     tiktok_shop_review: {
       type: Array,
     },
-    infomation_shop: {
-      type: Object,
-      default() {
-        return null;
-      }
+    information_shop: {
+      type: Object
     },
     textSubmit: {
       type: String
-    }
+    },
+    tiktok_user_information: {
+      type: Object,
+    },
   },
   data() {
     return {

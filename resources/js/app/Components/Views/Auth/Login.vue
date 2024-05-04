@@ -53,13 +53,13 @@
                                                @submit="submit"/>
                             </div>
                         </div>
-                        <div
-                            class="form-row form-row flex-column flex-md-row justify-content-center justify-content-md-between justify-content-lg-between">
-                            <a :href="urlGenerator('/forget-password')"
-                               class="bluish-text d-flex align-items-center justify-content-center justify-content-lg-end">
-                                <app-icon name="lock" class="pr-2"/> {{ $t('forgot_password') }}
-                            </a>
-                        </div>
+<!--                        <div-->
+<!--                            class="form-row form-row flex-column flex-md-row justify-content-center justify-content-md-between justify-content-lg-between">-->
+<!--                            <a :href="urlGenerator('/forget-password')"-->
+<!--                               class="bluish-text d-flex align-items-center justify-content-center justify-content-lg-end">-->
+<!--                                <app-icon name="lock" class="pr-2"/> {{ $t('forgot_password') }}-->
+<!--                            </a>-->
+<!--                        </div>-->
                         <div class="form-row">
                             <div class="col-12">
                                 <p class="text-center mt-5">

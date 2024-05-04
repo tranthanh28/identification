@@ -45,7 +45,8 @@ class IdentificationDetail extends AppModel
         'user_has_joined_group' => 'array',
         'post_is_recorded_on_social_listening' => 'array',
         'tiktok_shop_review' => 'array',
-        'infomation_shop' => 'array',
+        'information_shop' => 'array',
+        'tiktok_user_information' => 'array',
     ];
 
     protected $dates = [

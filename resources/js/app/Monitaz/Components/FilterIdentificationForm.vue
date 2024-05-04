@@ -1,7 +1,7 @@
 <template>
   <el-form :inline="true" :model="formFilter" class="demo-form-inline">
     <el-form-item label="Name Config">
-      <el-input v-model="formFilter.name" placeholder="Search name"></el-input>
+      <el-input v-model="formFilter.name" placeholder=""></el-input>
     </el-form-item>
     <el-form-item label="Phone">
       <el-input v-model="formFilter.phone" placeholder=""></el-input>

@@ -10,7 +10,7 @@ if (! function_exists('home_route')) {
     {
         if (auth()->check()) {
             return [
-                'route_name' => 'reaction.index',
+                'route_name' => 'identification.index',
                 'route_params' => null
             ];
         }

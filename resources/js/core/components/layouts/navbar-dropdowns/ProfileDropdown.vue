@@ -8,9 +8,9 @@
             <div class="nav-profile-text">
                 <p class="mb-0 text-black text-right">
                     {{ user.full_name }} <br>
-                    <span class="text-secondary font-size-90 d-block mt-1">
-                        {{ user.role }}
-                    </span>
+<!--                    <span class="text-secondary font-size-90 d-block mt-1">-->
+<!--                        {{ user.role }}-->
+<!--                    </span>-->
                 </p>
             </div>
             <app-avatar :title="user.full_name"

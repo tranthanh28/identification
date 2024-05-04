@@ -35,16 +35,16 @@
                         optionIcon: 'user',
                         url: urlGenerator(actions.MY_PROFILE)
                     },
-                    {
-                        optionName: 'Notifications',
-                        optionIcon: 'bell',
-                        url: urlGenerator(actions.All_NOTIFICATION)
-                    },
-                    {
-                        optionName: 'Settings',
-                        optionIcon: 'settings',
-                        url: urlGenerator(actions.APP_SETTINGS)
-                    },
+                    // {
+                    //     optionName: 'Notifications',
+                    //     optionIcon: 'bell',
+                    //     url: urlGenerator(actions.All_NOTIFICATION)
+                    // },
+                    // {
+                    //     optionName: 'Settings',
+                    //     optionIcon: 'settings',
+                    //     url: urlGenerator(actions.APP_SETTINGS)
+                    // },
                     {
                         optionName: 'Logout',
                         optionIcon: 'log-out',

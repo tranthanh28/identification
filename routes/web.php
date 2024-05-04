@@ -54,6 +54,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'authorize']], funct
     include __DIR__ . '/additional.php';
 });
 
+Route::group(['prefix' => 'monitaz', 'middleware' => ['auth', 'authorize']], function () {
+    include __DIR__ . '/monitaz.php';
+});
+
 Route::any('symlink', [SymlinkController::class, 'run'])
     ->name('storage.symlink');
 /**

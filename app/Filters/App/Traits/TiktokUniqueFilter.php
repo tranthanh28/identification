@@ -6,7 +6,7 @@ namespace App\Filters\App\Traits;
 
 trait TiktokUniqueFilter
 {
-    public function tiktok_unique($search = null)
+    public function tiktokUnique($search = null)
     {
         $this->singleSearch($search, 'tiktok_unique');
     }

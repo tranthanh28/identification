@@ -21,11 +21,11 @@
         :data="data.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
         style="width: 100%">
       <el-table-column
-          label="id"
-          prop="id">
+          type="index"
+          width="80">
       </el-table-column>
       <el-table-column
-          label="Name Config"
+          label="Name Config test"
           prop="name">
       </el-table-column>
       <el-table-column
@@ -52,10 +52,6 @@
           <el-tag v-if="scope.row.status == 0" type="warning" effect="dark">Pending</el-tag>
         </template>
       </el-table-column>
-<!--      <el-table-column-->
-<!--          label="Pass Day"-->
-<!--          prop="pass_day">-->
-<!--      </el-table-column>-->
       <el-table-column
           align="right">
         <template slot="header" slot-scope="scope">
@@ -102,7 +98,7 @@
     </el-dialog>
 
     <el-dialog :title="titleDetailDialog" :visible.sync="dialogFormDetailVisible" style="border-radius: 20px">
-      <DetailDialogIdentificationForm :form="formDetail" :data_audience="data_audience" :user_has_joined_group="user_has_joined_group" :post_is_recorded_on_social_listening="post_is_recorded_on_social_listening" :tiktok_shop_review="tiktok_shop_review" :infomation_shop="infomation_shop"></DetailDialogIdentificationForm>
+      <DetailDialogIdentificationForm :form="formDetail" :data_audience="data_audience" :user_has_joined_group="user_has_joined_group" :post_is_recorded_on_social_listening="post_is_recorded_on_social_listening" :tiktok_shop_review="tiktok_shop_review" :information_shop="information_shop" :tiktok_user_information="tiktok_user_information"></DetailDialogIdentificationForm>
     </el-dialog>
   </div>
 </template>
@@ -154,15 +150,17 @@ export default {
       form: {
         id: "",
         name: '',
-        pass_day: '',
-        content_file: "",
+        phone: '',
+        facebook_uid: "",
+        tiktok_unique: "",
       },
       formDetail: {},
       data_audience: {},
-      user_has_joined_group: {},
-      post_is_recorded_on_social_listening: {},
-      tiktok_shop_review: {},
-      infomation_shop: {},
+      user_has_joined_group: [],
+      post_is_recorded_on_social_listening: [],
+      tiktok_shop_review: [],
+      information_shop: {},
+      tiktok_user_information: {},
       formLabelWidth: '120px',
       errors: "",
       data: [],
@@ -229,11 +227,12 @@ export default {
       this.formDetail.phone = row.phone
       this.formDetail.facebook_uid = row.facebook_uid
       this.formDetail.tiktok_unique = row.tiktok_unique
-      this.data_audience = {... row?.identification_detail?.data_audience}
-      this.user_has_joined_group = {... row?.identification_detail?.user_has_joined_group}
-      this.post_is_recorded_on_social_listening = {... row?.identification_detail?.post_is_recorded_on_social_listening}
-      this.tiktok_shop_review = {... row?.identification_detail?.tiktok_shop_review}
-      this.infomation_shop = {... row?.identification_detail?.infomation_shop}
+      this.data_audience = row?.identification_detail?.data_audience ?? {}
+      this.user_has_joined_group = row?.identification_detail?.user_has_joined_group ?? []
+      this.post_is_recorded_on_social_listening = row?.identification_detail?.post_is_recorded_on_social_listening ?? []
+      this.tiktok_shop_review = row?.identification_detail?.tiktok_shop_review ?? []
+      this.information_shop = row?.identification_detail?.information_shop ?? {}
+      this.tiktok_user_information = row?.identification_detail?.tiktok_user_information ?? {}
     },
     handleEdit(row) {
       if (row.status == 1) return
@@ -262,9 +261,11 @@ export default {
         this.getList()
         this.dialogFormVisible = false
         this.form = {
-          name: '',
-          content_file: "",
-          pass_day: 60,
+          id: '',
+          name: "",
+          phone: "",
+          facebook_uid: "",
+          tiktok_unique: "",
         }
       }).catch((error) => {
         this.stopLoading()
@@ -282,9 +283,10 @@ export default {
         this.dialogFormVisible = false
         this.form = {
           id: '',
-          name: '',
-          pass_day: '',
-          content_file: "",
+          name: "",
+          phone: "",
+          facebook_uid: "",
+          tiktok_unique: "",
         }
       }).catch((error) => {
         this.stopLoading()
