@@ -71,11 +71,21 @@
               :disabled="scope.row.status != 2"
               @click="handleEdit(scope.row)"><i class="el-icon-edit"></i>
           </el-button>
-          <el-button
-              size="mini"
-              :disabled="scope.row.status !== 2"
-              @click="handleDelete(scope.row)"><i class="el-icon-delete-solid"></i>
-          </el-button>
+          <el-popconfirm
+              confirm-button-text='OK'
+              cancel-button-text='No, Thanks'
+              icon="el-icon-info"
+              icon-color="red"
+              title="Are you sure to delete this?"
+              @confirm="handleDelete(scope.row)"
+          >
+            <el-button
+                size="mini"
+                slot="reference"
+                :disabled="scope.row.status !== 2"
+                ><i class="el-icon-delete-solid"></i>
+            </el-button>
+          </el-popconfirm>
           <el-button
               :disabled="scope.row.status != 2"
               size="mini"
@@ -298,7 +308,24 @@ export default {
       })
     },
     handleDelete(row) {
-      console.log('delete', row)
+      axios.delete(`${this.urlApi}/${this.form.id}`).then((response) => {
+        this.stopLoading()
+        this.getList()
+        this.form = {
+          id: '',
+          name: "",
+          phone: "",
+          facebook_uid: "",
+          tiktok_unique: "",
+        }
+      }).catch((error) => {
+        this.stopLoading()
+        this.$notify.error({
+          title: 'Error',
+          message: 'failed'
+        });
+        this.errors = error.response.data.errors;
+      })
     },
     handleDowload(row) {
       let dataDowload = {
