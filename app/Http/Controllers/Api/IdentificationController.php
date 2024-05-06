@@ -32,7 +32,7 @@ class IdentificationController extends Controller
     public function index()
     {
         $data = Identification::filters($this->filter)
-            ->with('identificationDetail')->paginate(10);
+            ->with('identificationDetail')->latest()->paginate(10);
 
         return response()->json([
             'status' => true,

@@ -71,6 +71,11 @@
               :disabled="scope.row.status != 2"
               @click="handleEdit(scope.row)"><i class="el-icon-edit"></i>
           </el-button>
+          <el-button
+              :disabled="scope.row.status != 2"
+              size="mini"
+              @click="handleDowload(scope.row)"><i class="el-icon-download"></i>
+          </el-button>
           <el-popconfirm
               confirm-button-text='OK'
               cancel-button-text='No, Thanks'
@@ -86,11 +91,6 @@
                 ><i class="el-icon-delete-solid"></i>
             </el-button>
           </el-popconfirm>
-          <el-button
-              :disabled="scope.row.status != 2"
-              size="mini"
-              @click="handleDowload(scope.row)"><i class="el-icon-download"></i>
-          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -202,7 +202,6 @@ export default {
       if (page == null) {
         this.page = 1
       }
-      this.page = 1
       this.formWindowUrl = {...this.formFilter}
       this.formWindowUrl.page = this.page
       let pageTitle = document.title,
@@ -308,7 +307,7 @@ export default {
       })
     },
     handleDelete(row) {
-      axios.delete(`${this.urlApi}/${this.form.id}`).then((response) => {
+      axios.delete(`${this.urlApi}/${row.id}`).then((response) => {
         this.stopLoading()
         this.getList()
         this.form = {
@@ -388,7 +387,7 @@ export default {
       //   },
       // ]
 
-      axios.get(`${this.urlApi}?page=${page}&${query}`).then((response) => {
+      axios.get(`${this.urlApi}?${query}`).then((response) => {
         this.stopLoading()
         this.data = response.data.data.data
         this.totalPages = response.data.data.total
