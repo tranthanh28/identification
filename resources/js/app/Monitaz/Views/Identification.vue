@@ -8,7 +8,7 @@ export default {
   components: {IdentificationComponent},
   data() {
     return {
-      title: "Identification",
+      title: "Danh Sách",
       urlApi: "/monitaz/identification"
     }
   }

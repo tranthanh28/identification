@@ -19,10 +19,15 @@
 
     <el-table
         :data="data.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
-        style="width: 100%">
+        style="width: 100%"
+        >
       <el-table-column
           type="index"
-          width="80">
+          width="80"
+          label="STT"
+          align="center"
+          header-align="center"
+      >
       </el-table-column>
       <el-table-column
           label="Name Config test"
@@ -43,6 +48,8 @@
       <el-table-column
           label="Status"
           prop="status"
+          align="center"
+          header-align="center"
           :filters="[{ text: 'Pending', value: '0' }, { text: 'Processing', value: '1' }, { text: 'Success', value: '2' }]"
           :filter-method="filterTag"
           filter-placement="bottom-end">
@@ -95,6 +102,7 @@
       </el-table-column>
     </el-table>
     <el-pagination
+        style="margin-top:30px"
         background
         layout="prev, pager, next"
         @current-change="handleCurrentChange"

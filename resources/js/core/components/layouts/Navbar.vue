@@ -40,18 +40,18 @@
                 </div>
                 <div>
                     <ul class="navbar-nav navbar-nav-right ml-auto">
-                        <li class="nav-item">
-                            <button class="navbar-toggler align-self-center"
-                                    type="button"
-                                    @click.prevent="toggleDarkMode">
-                <span v-if="darkMode" :key="'sun'" :title="$t('light_mood')">
-                    <app-icon :name="'sun'"/>
-                </span>
-                                <span v-else :key="'moon'" :title="$t('dark_mood')">
-                    <app-icon :name="'moon'"/>
-                </span>
-                            </button>
-                        </li>
+<!--                        <li class="nav-item">-->
+<!--                            <button class="navbar-toggler align-self-center"-->
+<!--                                    type="button"-->
+<!--                                    @click.prevent="toggleDarkMode">-->
+<!--                <span v-if="darkMode" :key="'sun'" :title="$t('light_mood')">-->
+<!--                    <app-icon :name="'sun'"/>-->
+<!--                </span>-->
+<!--                                <span v-else :key="'moon'" :title="$t('dark_mood')">-->
+<!--                    <app-icon :name="'moon'"/>-->
+<!--                </span>-->
+<!--                            </button>-->
+<!--                        </li>-->
                         <li class="nav-item d-none d-lg-block">
                             <a v-if="fullScreen" class="d-flex align-items-center nav-link" href="#" :key="'maximize'"
                                @click="fullscreen" :title="$t('exit_fullscreen')">
@@ -64,10 +64,10 @@
                             </a>
                         </li>
 
-                        <app-navbar-language-dropdown
-                            :selected-language="selectedLanguage"
-                            :data="languageData"
-                        />
+<!--                        <app-navbar-language-dropdown-->
+<!--                            :selected-language="selectedLanguage"-->
+<!--                            :data="languageData"-->
+<!--                        />-->
 
                         <component
                             :is="notificationComponent"
