@@ -16,20 +16,20 @@ class IdentificationService extends BaseService
         return Identification::with('identificationDetail')->orderByDesc('identifications.id')->paginate($this->per_page);
     }
 
-    public function getServiceBrand()
-    {
-        return ServiceBrand::where('status', 0)->pluck('name', 'id')->toArray();
-    }
+    // public function getServiceBrand()
+    // {
+    //     return ServiceBrand::where('status', 0)->pluck('name', 'id')->toArray();
+    // }
 
-    public function getServiceBrandByBrandID($brand_id)
-    {
-        if (!$brand_id) $brand_id = 1;
-        return ServiceBrand::whereRaw("(cid = $brand_id OR sid = $brand_id OR pid = $brand_id) AND status = 0 OR id = $brand_id")
-            ->orderBy('name', 'asc')
-            ->pluck('name', 'id')
-            ->toArray();
-//        var_dump($object);
-    }
+//     public function getServiceBrandByBrandID($brand_id)
+//     {
+//         if (!$brand_id) $brand_id = 1;
+//         return ServiceBrand::whereRaw("(cid = $brand_id OR sid = $brand_id OR pid = $brand_id) AND status = 0 OR id = $brand_id")
+//             ->orderBy('name', 'asc')
+//             ->pluck('name', 'id')
+//             ->toArray();
+// //        var_dump($object);
+//     }
 
     public function getIdentificationByFilter($name, $status)
     {
