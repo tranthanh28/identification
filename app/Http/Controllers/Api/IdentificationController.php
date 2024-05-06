@@ -6,6 +6,7 @@ use App\Exports\ReactionExport;
 use App\Filters\App\Monitaz\Identification\IdentificationFilter;
 use App\Http\Controllers\Controller;
 use App\Models\Monitaz\Identification\Identification;
+use App\Models\Monitaz\Identification\IdentificationDetail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,10 +16,12 @@ use App\Http\Requests\Backend\IdentificationCreateRequest;
 use App\Http\Requests\Backend\IdentificationUpdateRequest;
 use App\Services\Backend\IdentificationService;
 use App\Http\Controllers\Core\BasicHelper;
+use Illuminate\Support\Facades\DB;
 use LDAP\Result;
 
 class IdentificationController extends Controller
 {
+    private $basicHelper;
     public function __construct(IdentificationFilter $filter)
     {
         $this->filter = $filter;
@@ -43,12 +46,19 @@ class IdentificationController extends Controller
 
     public function store(IdentificationCreateRequest $identificationCreateRequest)
     {
-        $result = [];
         $identification = new Identification();
         $identification->name = str_replace( array('\\', '/', ':', '*', '"', '<', '>'), '', $identificationCreateRequest->get('name'));
         $identification->phone = null;
         if ($identificationCreateRequest->get('phone')) {
-            $identification->phone = preg_replace('/\s+/', '', $identificationCreateRequest->get('phone'));
+            $phone = $this->basicHelper->phoneFilter($identificationCreateRequest->get('phone'));
+            if ($phone["code"] == 11){
+                return $this->basicHelper->response_form(400, 0, "Phone length must be 10");
+            } elseif ($phone["code"] == 12){
+                return $this->basicHelper->response_form(400, 0, "Invalid first letter in phone");
+            } elseif ($phone["code"] == 99){
+                return $this->basicHelper->response_form(400, 0, "Something wrong. Please try again");
+            }
+            $data['phone'] = $phone["phone"];
         }
         $identification->facebook_uid = null;
         if ($identificationCreateRequest->get('facebook_uid')) {
@@ -61,39 +71,29 @@ class IdentificationController extends Controller
         $identification->status = 0;
         
         if (!$identification->phone && !$identification->facebook_uid && !$identification->tiktok_unique) {
-            $result["code"] = 0;
-            $result["message"] = "Missing required parameter";
-            return $result;
+            return $this->basicHelper->response_form(400, 0, "Missing required parameter");
         }
         $identification->user_created = auth()->user()->id;
         try {
             $identification->save();
-            $result['code'] = 1;
+            return $this->basicHelper->response_form(200, 1);
         } catch (\Exception $e) {
-            $result['code'] = 0;
-            $result['message'] = 'Something wrong. Please try again';
             $this->functionLog("store", "", $e->getMessage());
+            return $this->basicHelper->response_form(500, 0, "Something wrong. Please try again");
         }
-
-        return $result;
     }
 
     public function update(IdentificationUpdateRequest $identificationUpdateRequest, $id)
     {
-        $result = [];
         $row = Identification::find($id);
         if (!$row){
-            $result['code'] = 0;
-            $result["message"] = "Data not found";
-            return $result;
+            return $this->basicHelper->response_form(400, 0, "Data not found");
         }
-
         $user_id = auth()->user()->id;
         $user_created = $row->user_created;
 
         if ($user_id != $user_created){
-            $result["code"] = 0;
-            $result["message"] = "Config not belong to user";
+            return $this->basicHelper->response_form(400, 0, "Config not belong to user");
         }
 
         $service =  new IdentificationService();
@@ -103,20 +103,15 @@ class IdentificationController extends Controller
         if ($identificationUpdateRequest->get('phone')) {
             $phone = $this->basicHelper->phoneFilter($identificationUpdateRequest->get('phone'));
             if ($phone["code"] == 11){
-                $result["code"] = 0;
-                $result["message"] = "Phone length must be 10";
-                return $result;
+                return $this->basicHelper->response_form(400, 0, "Phone length must be 10");
             } elseif ($phone["code"] == 12){
-                $result["code"] = 0;
-                $result["message"] = "Invalid first letter in phone";
-                return $result;
+                return $this->basicHelper->response_form(400, 0, "Invalid first letter in phone");
             } elseif ($phone["code"] == 99){
-                $result["code"] = 0;
-                $result["message"] = "Something wrong. Please try again";
-                return $result;
+                return $this->basicHelper->response_form(400, 0, "Something wrong. Please try again");
             }
             $data['phone'] = $phone["phone"];
         }
+
         $data['facebook_uid'] = null;
         if ($identificationUpdateRequest->get('facebook_uid')) {
             $data['facebook_uid'] = preg_replace('/\s+/', '', $identificationUpdateRequest->get('facebook_uid'));
@@ -128,19 +123,42 @@ class IdentificationController extends Controller
         $data['status'] = 0;
 
         if (!$data['phone'] && !$data['facebook_uid'] && !$data['tiktok_unique']) {
-            $result['code'] = 0;
-            $result['message'] = 'Missing required parameter';
-            return $result;
+            return $this->basicHelper->response_form(400, 0, "Missing required parameter");
         }
 
         if ($service->update($id, $data)) {
-            $result['code'] = 1;
+            return $this->basicHelper->response_form(200, 1);
         } else {
-            $result['code'] = 0;
-            $result['message'] = 'Something wrong. Please try again';
             $this->functionLog("update", "update failed", "", $data);
+            return $this->basicHelper->response_form(500, 0, "Something wrong. Please try again");
         }
-        return $result;
+    }
+
+    public function delete(Request $request, $id){
+        $identification = new Identification();
+        $row = $identification::find($id);
+        if (!$row){
+            return $this->basicHelper->response_form(400, 0, "Data not found");
+        }
+        $user_id = auth()->user()->id;
+        $user_created = $row->user_created;
+
+        if ($user_id != $user_created){
+            return $this->basicHelper->response_form(400, 0, "Config not belong to user");
+        }
+
+        $identificationDetail = new IdentificationDetail();
+        try {
+            DB::beginTransaction();
+            $row->delete();
+            $identificationDetail::where("config_id", $row->id)->delete();
+            DB::commit();
+            return $this->basicHelper->response_form(200, 1);
+        } catch (\Exception $e) {
+            $this->functionLog("delete", "", $e->getMessage());
+            DB::rollBack();
+            return $this->basicHelper->response_form(500, 0, "Something wrong. Please try again");
+        }
     }
 
     public function exportExcel(Request $request)

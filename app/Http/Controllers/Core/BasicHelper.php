@@ -21,4 +21,12 @@ class BasicHelper
 
         return ["code" => 1, "phone" => $phone];
     }
+
+    public function response_form($statusCode, $code, $message="", $data=[]){
+        return response()->json([
+            'status' => $code,
+            'message' => $message,
+            'data' => $data
+        ], $statusCode);
+    }
 }
