@@ -160,16 +160,21 @@
             <div v-for="(item,index) in user_has_joined_group">
               <div class="text item">
                 <el-row type="flex">
-                  <el-col :span="2">
+                  <el-col :xl="2" :xs="4" :span="2">
                     <div>{{ index }}.</div>
                   </el-col>
-                  <el-col>
-                    <div>
-                      <el-link :href="item.url" target="_blank" type="success">
-                        {{ item?.id }} - {{ item?.name }}
-                      </el-link>
-                    </div>
+                  <el-col :xl="8" :sm="12" :md="14">
+                    <el-link :href="item.url" target="_blank" type="success"><div>{{ item?.id }}</div></el-link>
                   </el-col>
+                  <el-col>
+                    <div> - {{ item?.name }}</div>
+                  </el-col>
+<!--                  <el-col>-->
+<!--                    <div>-->
+<!--                      <el-link :href="item.url" target="_blank" type="success">-->
+<!--                        {{ item?.id }} - {{ item?.name }}-->
+<!--                    </div>-->
+<!--                  </el-col>-->
                 </el-row>
               </div>
             </div>
