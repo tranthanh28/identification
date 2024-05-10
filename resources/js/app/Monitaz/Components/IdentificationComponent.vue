@@ -30,7 +30,7 @@
       >
       </el-table-column>
       <el-table-column
-          label="Name Config test"
+          label="Name Config"
           prop="name">
       </el-table-column>
       <el-table-column
@@ -75,14 +75,15 @@
           </el-button>
           <el-button
               size="mini"
-              :disabled="scope.row.status != 2"
+              :disabled="scope.row.status == 1"
               @click="handleEdit(scope.row)"><i class="el-icon-edit"></i>
           </el-button>
+          <a v-if="scope.row.status == 2 && scope.row.file_name" :href="urlGenerator(`/storage/reports/${scope.row.file_name}`)" download>
           <el-button
-              :disabled="scope.row.status != 2"
-              size="mini"
-              @click="handleDowload(scope.row)"><i class="el-icon-download"></i>
+              size="mini">
+            <i class="el-icon-download"></i>
           </el-button>
+          </a>
           <el-popconfirm
               confirm-button-text='OK'
               cancel-button-text='No, Thanks'
@@ -94,7 +95,7 @@
             <el-button
                 size="mini"
                 slot="reference"
-                :disabled="scope.row.status !== 2"
+                :disabled="scope.row.status == 1"
                 ><i class="el-icon-delete-solid"></i>
             </el-button>
           </el-popconfirm>
@@ -118,6 +119,7 @@
     <el-dialog :title="titleDetailDialog" :visible.sync="dialogFormDetailVisible" style="border-radius: 20px">
       <DetailDialogIdentificationForm :form="formDetail" :data_audience="data_audience" :user_has_joined_group="user_has_joined_group" :post_is_recorded_on_social_listening="post_is_recorded_on_social_listening" :tiktok_shop_review="tiktok_shop_review" :information_shop="information_shop" :tiktok_user_information="tiktok_user_information"></DetailDialogIdentificationForm>
     </el-dialog>
+<!--    <test></test>-->
   </div>
 </template>
 
@@ -125,10 +127,12 @@
 import DialogIdentificationForm from "@/app/Monitaz/Components/DialogIdentificationForm";
 import DetailDialogIdentificationForm from "@/app/Monitaz/Components/DetailDialogIdentificationForm";
 import FilterIdentificationForm from "@/app/Monitaz/Components/FilterIdentificationForm";
+import test from "@/app/Monitaz/Components/test";
 import StringMethod from "@/core/helpers/string/StringMethod";
+import {urlGenerator} from "@/app/Helpers/AxiosHelper";
 
 export default {
-  components: {DialogIdentificationForm, FilterIdentificationForm, DetailDialogIdentificationForm},
+  components: {DialogIdentificationForm, FilterIdentificationForm, DetailDialogIdentificationForm, test},
   props: {
     title: {
       type: String,
@@ -141,6 +145,7 @@ export default {
   },
   data() {
     return {
+      urlGenerator,
       formFilter: {
         name: '',
         phone: '',
@@ -237,19 +242,29 @@ export default {
     },
     handleView(row) {
       if (row.status !== 2) return
-      this.titleDetailDialog = 'THÔNG TIN ĐỊNH DANH'
-      this.dialogFormDetailVisible = true
-      this.formDetail.id = row.id
-      this.formDetail.name = row.name
-      this.formDetail.phone = row.phone
-      this.formDetail.facebook_uid = row.facebook_uid
-      this.formDetail.tiktok_unique = row.tiktok_unique
-      this.data_audience = row?.identification_detail?.data_audience ?? {}
-      this.user_has_joined_group = row?.identification_detail?.user_has_joined_group ?? []
-      this.post_is_recorded_on_social_listening = row?.identification_detail?.post_is_recorded_on_social_listening ?? []
-      this.tiktok_shop_review = row?.identification_detail?.tiktok_shop_review ?? []
-      this.information_shop = row?.identification_detail?.information_shop ?? {}
-      this.tiktok_user_information = row?.identification_detail?.tiktok_user_information ?? {}
+      axios.get(`${this.urlApi}/${row.id}`, this.form).then((response) => {
+        this.stopLoading()
+        this.titleDetailDialog = 'THÔNG TIN ĐỊNH DANH'
+        this.dialogFormDetailVisible = true
+        this.formDetail.id = row.id
+        this.formDetail.name = row.name
+        let data = response.data.data
+        this.formDetail.phone = data.phone ?? ''
+        this.formDetail.facebook_uid = data.facebook_uid ?? ''
+        this.formDetail.tiktok_unique = data.tiktok_unique ?? ''
+        this.data_audience = data.data_audience ?? {}
+        this.user_has_joined_group = data.user_has_joined_group ?? []
+        this.post_is_recorded_on_social_listening = data.post_is_recorded_on_social_listening ?? []
+        this.tiktok_shop_review = data.tiktok_shop_review ?? []
+        this.information_shop = data.information_shop ?? {}
+        this.tiktok_user_information = data.tiktok_user_information ?? {}
+      }).catch((error) => {
+        this.stopLoading()
+        this.$notify.error({
+          title: 'Error',
+          message: 'failed'
+        });
+      })
     },
     handleEdit(row) {
       if (row.status == 1) return
@@ -260,7 +275,7 @@ export default {
       this.form.phone = row.phone
       this.form.facebook_uid = row.facebook_uid
       this.form.tiktok_unique = row.tiktok_unique
-      this.textSubmit = "Cập nhập"
+      this.textSubmit = "Cập nhật"
     },
     handleCreate() {
       this.titleDialog = 'THÊM MỚI ĐỊNH DANH'
@@ -410,3 +425,14 @@ export default {
 
 }
 </script>
+<style scoped>
+/*a {*/
+/*  pointer-events: none;*/
+/*  cursor: default;*/
+/*  text-decoration: none;*/
+/*  color: black;*/
+/*}*/
+.el-button+.el-button {
+  margin-left: 0px;
+}
+</style>
