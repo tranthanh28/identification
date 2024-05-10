@@ -18,6 +18,7 @@ use App\Services\Backend\IdentificationService;
 use App\Http\Controllers\Core\BasicHelper;
 use Illuminate\Support\Facades\DB;
 use LDAP\Result;
+use Illuminate\Support\Facades\Http;
 
 class IdentificationController extends Controller
 {
@@ -34,14 +35,52 @@ class IdentificationController extends Controller
 
     public function index()
     {
-        $data = Identification::filters($this->filter)
-            ->with('identificationDetail')->latest()->paginate(10);
+        $data = Identification::filters($this->filter)->latest()->paginate(10);
 
         return response()->json([
             'status' => true,
             'message' => '',
             'data' => $data
         ], 200);
+    }
+
+    public function show($id){
+        $dbRow = Identification::find($id);
+        if (!$dbRow){
+            return $this->basicHelper->response_form(400, 0, "Data not found");
+        }
+
+        if ($dbRow->user_created != auth()->user()->id){
+            return $this->basicHelper->response_form(403, 0, "Permission denied");
+        } 
+
+        $dbRow = IdentificationDetail::where("config_id", $id)->first();
+        if(!$dbRow){
+            return $this->basicHelper->response_form(400, 0, "Config not found");
+        }
+
+        $returnData = [];
+
+        $response = Http::get("http://123.31.24.80:9999/tiktok-mobile/get-user-info/".trim($dbRow->tiktok_unique))->body();
+        $jsonResponse = json_decode($response, true);
+        $tiktok_avatar = $jsonResponse['data']["response"]["__DEFAULT_SCOPE__"]["webapp.user-detail"]["userInfo"]["user"]["avatarThumb"] ?? "";
+
+        $returnData["phone"] = $this->basicHelper->hidePhone($dbRow->phone);
+        $returnData["tiktok_avatar"] = $tiktok_avatar;
+        $returnData["tiktok_unique"] = $dbRow->tiktok_unique;
+        $returnData["tiktok_uid"] = $dbRow->tiktok_uid;
+        $returnData["tiktok_seller_uid"] = $dbRow->tiktok_seller_uid;
+        $returnData["facebook_uid"] = $dbRow->facebook_uid;
+        $returnData["data_audience"] = $dbRow->data_audience;
+        $returnData["user_has_joined_group"] = $dbRow->user_has_joined_group;
+        $returnData["post_is_recorded_on_social_listening"] = $dbRow->post_is_recorded_on_social_listening;
+        $informationShop = $dbRow->information_shop;
+        unset($informationShop["reviews_id_list"]); 
+        $returnData["information_shop"] = $informationShop;
+        $returnData["tiktok_user_information"] = $dbRow->tiktok_user_information;
+        $returnData["tiktok_shop_review"] = $dbRow->tiktok_shop_review;
+
+        return $this->basicHelper->response_form(200, 1, "", $returnData);
     }
 
     public function store(IdentificationCreateRequest $identificationCreateRequest)
