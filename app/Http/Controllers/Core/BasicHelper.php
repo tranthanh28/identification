@@ -29,4 +29,9 @@ class BasicHelper
             'data' => $data
         ], $statusCode);
     }
+
+    public function hidePhone($phone){
+        $maskedString = substr_replace($phone, '******', 2, 6);
+        return $maskedString;
+    }
 }
