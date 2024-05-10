@@ -226,7 +226,7 @@
         </el-card>
         <div class="info-user-tiktok group-info" v-if="!isObjectEmpty(tiktok_user_information)">
           <div class="header-info-user d-flex align-content-center">
-            <el-avatar :size="30" :src="tiktok_user_information?.avatar" @error="errorHandler">
+            <el-avatar :size="30" :src="form?.tiktok_avatar" @error="errorHandler">
               <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png"/>
             </el-avatar>
             <div style="padding-left: 10px">{{tiktok_user_information?.tiktok_nickname}}</div>
@@ -371,6 +371,7 @@ export default {
           phone: '',
           facebook_uid: '',
           tiktok_unique: '',
+          tiktok_avatar: '',
         }
       }
     },
@@ -397,7 +398,7 @@ export default {
     },
     tiktok_user_information: {
       type: Object,
-    },
+    }
   },
   data() {
     return {

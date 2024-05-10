@@ -116,7 +116,7 @@
       <DialogIdentificationForm :form="form" :textSubmit="textSubmit" @submit="submit"></DialogIdentificationForm>
     </el-dialog>
 
-    <el-dialog :title="titleDetailDialog" :visible.sync="dialogFormDetailVisible" style="border-radius: 20px">
+    <el-dialog :title="titleDetailDialog" :visible.sync="dialogFormDetailVisible" :destroy-on-close='true' :lock-scroll="false">
       <DetailDialogIdentificationForm :form="formDetail" :data_audience="data_audience" :user_has_joined_group="user_has_joined_group" :post_is_recorded_on_social_listening="post_is_recorded_on_social_listening" :tiktok_shop_review="tiktok_shop_review" :information_shop="information_shop" :tiktok_user_information="tiktok_user_information"></DetailDialogIdentificationForm>
     </el-dialog>
 <!--    <test></test>-->
@@ -127,12 +127,12 @@
 import DialogIdentificationForm from "@/app/Monitaz/Components/DialogIdentificationForm";
 import DetailDialogIdentificationForm from "@/app/Monitaz/Components/DetailDialogIdentificationForm";
 import FilterIdentificationForm from "@/app/Monitaz/Components/FilterIdentificationForm";
-import test from "@/app/Monitaz/Components/test";
+// import test from "@/app/Monitaz/Components/test";
 import StringMethod from "@/core/helpers/string/StringMethod";
 import {urlGenerator} from "@/app/Helpers/AxiosHelper";
 
 export default {
-  components: {DialogIdentificationForm, FilterIdentificationForm, DetailDialogIdentificationForm, test},
+  components: {DialogIdentificationForm, FilterIdentificationForm, DetailDialogIdentificationForm},
   props: {
     title: {
       type: String,
@@ -245,20 +245,23 @@ export default {
       axios.get(`${this.urlApi}/${row.id}`, this.form).then((response) => {
         this.stopLoading()
         this.titleDetailDialog = 'THÔNG TIN ĐỊNH DANH'
-        this.dialogFormDetailVisible = true
         this.formDetail.id = row.id
         this.formDetail.name = row.name
         let data = response.data.data
-        this.formDetail.phone = data.phone ?? ''
-        this.formDetail.facebook_uid = data.facebook_uid ?? ''
-        this.formDetail.tiktok_unique = data.tiktok_unique ?? ''
-        this.data_audience = data.data_audience ?? {}
-        this.user_has_joined_group = data.user_has_joined_group ?? []
-        this.post_is_recorded_on_social_listening = data.post_is_recorded_on_social_listening ?? []
-        this.tiktok_shop_review = data.tiktok_shop_review ?? []
-        this.information_shop = data.information_shop ?? {}
-        this.tiktok_user_information = data.tiktok_user_information ?? {}
+        this.formDetail.phone = data?.phone ?? ''
+        this.formDetail.facebook_uid = data?.facebook_uid ?? ''
+        this.formDetail.tiktok_unique = data?.tiktok_unique ?? ''
+        this.formDetail.tiktok_avatar = data?.tiktok_avatar ?? ''
+        this.data_audience = data?.data_audience ?? {}
+        this.user_has_joined_group = data?.user_has_joined_group ?? []
+        this.post_is_recorded_on_social_listening = data?.post_is_recorded_on_social_listening ?? []
+        let tiktok_shop_review = data?.tiktok_shop_review ?? []
+        this.tiktok_shop_review = tiktok_shop_review.slice(1, 101)
+        this.information_shop = data?.information_shop ?? {}
+        this.tiktok_user_information = data?.tiktok_user_information ?? {}
+        this.dialogFormDetailVisible = true
       }).catch((error) => {
+        console.log(error)
         this.stopLoading()
         this.$notify.error({
           title: 'Error',

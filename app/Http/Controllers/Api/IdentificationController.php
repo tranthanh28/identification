@@ -56,7 +56,7 @@ class IdentificationController extends Controller
 
         $dbRow = IdentificationDetail::where("config_id", $id)->first();
         if(!$dbRow){
-            return $this->basicHelper->response_form(400, 0, "Config not found");
+            return $this->basicHelper->response_form(200, 0, "",[] );
         }
 
         $returnData = [];
