@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 
-class ReactionController extends Controller
+class MRController extends Controller
 {
     public function index()
     {

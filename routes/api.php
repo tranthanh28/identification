@@ -28,3 +28,10 @@ Route::group(['prefix' => 'reaction'], function () {
     // Route::post('/dowload', [ReactionController::class, 'index']);
 });
 
+Route::group(['prefix' => 'mr'], function () {
+    Route::get('/', [ReactionController::class, 'index']);
+    // Route::get('/{id}', [ReactionController::class, 'show']);
+    Route::post('/', [ReactionController::class, 'store']);
+    Route::post('/export-excel', [ReactionController::class, 'exportExcel']);
+    // Route::post('/dowload', [ReactionController::class, 'index']);
+});

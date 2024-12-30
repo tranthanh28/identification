@@ -14,15 +14,9 @@ class SidebarComposer
         $menu = [
             [
                 'icon' => 'pie-chart',
-                'name' => 'Update Reaction',
-                'url' => request()->root() . '/reaction',
+                'name' => 'Upload file',
+                'url' => request()->root() . '/mr',
                 'permission' => true
-            ],
-            [
-                'icon' => 'user-check',
-                'name' => trans('custom.user_and_roles'),
-                'url' => request()->root() . '/users-and-roles',
-                'permission' => authorize_any(['view_users', 'view_roles', 'invite_user', 'create_roles']),
             ],
         ];
 

@@ -3,12 +3,12 @@
 
 namespace App\Services\Monitaz\Reaction\Crud;
 
-use App\Models\Monitaz\Reaction\Reaction;
+use App\Models\Monitaz\Reaction\FileMr;
 use App\Services\App\AppService;
 
 class CrudService extends AppService
 {
-    public function __construct(Reaction $crud)
+    public function __construct(FileMr $crud)
     {
         $this->model = $crud;
     }

@@ -85,3 +85,4 @@ Vue.component('advance-datatable2', require('./Components/Views/Demo/Tables/Adva
 
 // Vue.component('reaction-component', require('./Components/Views/Demo/Tables/Reaction').default);
 Vue.component('reaction-component', require('./Components/Views/Demo/Tables/Reaction2').default);
+Vue.component('mr-file-component', require('./Components/Views/Demo/Tables/MrFile').default);
