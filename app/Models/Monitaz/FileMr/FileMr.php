@@ -11,7 +11,13 @@ class FileMr extends Model
 {
     protected $connection = "mysql2";
 
-    protected $fillable = ['name', 'created_at', 'status', 'post_ids', 'file_name'];
+    protected $fillable = [
+        'name',
+        'created_at',
+        'status',
+        'updated_at',
+        'model'
+    ];
 
     protected $table = "file_mr";
 }

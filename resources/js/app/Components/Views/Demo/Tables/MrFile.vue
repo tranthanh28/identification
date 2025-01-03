@@ -41,12 +41,11 @@
         <template slot-scope="scope">
           <el-button
               size="mini"
-              @click="handleDowload(scope.row)">Download
+              @click="handleDownload(scope.row)">Download
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-
 
     <el-dialog title="Upload file" :visible.sync="dialogFormVisible">
       <el-form :model="form">
@@ -74,7 +73,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
     <el-button @click="dialogFormVisible = false">Cancel</el-button>
-    <el-button type="primary" @click="handleAddReaction">Submit</el-button>
+    <el-button type="primary" @click="handleSubmit">Submit</el-button>
   </span>
     </el-dialog>
   </div>
@@ -117,10 +116,21 @@ export default {
     this.getList(this.page)
   },
   methods: {
-    handleAddReaction() {
+    handleSubmit() {
+      this.startLoading()
       this.$refs.upload.clearFiles();
-      this.form.post_ids = this.fileContent
-      axios.post('/api/reaction', this.form).then((response) => {
+      let formData = new FormData();
+      formData.append('file', this.uploadFile);
+      formData.append('model', this.form.model);
+      // this.form.post_ids = this.fileContent
+      axios.post('/api/mr',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+      ).then((response) => {
         this.stopLoading()
         this.getList()
         this.dialogFormVisible = false
@@ -139,22 +149,14 @@ export default {
 
     },
     handleImport(file) {
-      this.uploadFile = file
-      let reader = new FileReader()
-      reader.readAsText(this.uploadFile.raw)
-      reader.onload = async (e) => {
-        try {
-          this.fileContent = e.target.result
-        } catch (err) {
-          console.log(`Load JSON file error: ${err.message}`)
-        }
-      }
+      this.uploadFile = file.raw
     },
-    handleDowload(row) {
-      let dataDowload = {
-        file_name: row.file_name
+    handleDownload(row) {
+      console.log(row)
+      let dataDownload = {
+        file_name: row.output_file_name
       }
-      axios.post('/api/reaction/export-excel', dataDowload, {
+      axios.post('/api/mr/export-excel', dataDownload, {
         responseType: 'blob'
       }).then((response) => {
         const url = URL.createObjectURL(new Blob([response.data], {
@@ -162,7 +164,7 @@ export default {
         }))
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', dataDowload.file_name)
+        link.setAttribute('download', dataDownload.file_name)
         document.body.appendChild(link)
         link.click()
       }).catch((error) => {

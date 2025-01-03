@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 });*/
 
 use App\Http\Controllers\Api\ReactionController;
+use App\Http\Controllers\Api\MRController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'reaction'], function () {
@@ -29,9 +30,9 @@ Route::group(['prefix' => 'reaction'], function () {
 });
 
 Route::group(['prefix' => 'mr'], function () {
-    Route::get('/', [ReactionController::class, 'index']);
-    // Route::get('/{id}', [ReactionController::class, 'show']);
-    Route::post('/', [ReactionController::class, 'store']);
-    Route::post('/export-excel', [ReactionController::class, 'exportExcel']);
-    // Route::post('/dowload', [ReactionController::class, 'index']);
+    Route::get('/', [MRController::class, 'index']);
+    // Route::get('/{id}', [MRController::class, 'show']);
+    Route::post('/', [MRController::class, 'store']);
+    Route::post('/export-excel', [MRController::class, 'exportExcel']);
+    // Route::post('/dowload', [MRController::class, 'index']);
 });

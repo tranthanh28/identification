@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Exports\ReactionExport;
 use App\Http\Controllers\Controller;
-use App\Models\Monitaz\Reaction\FileMr;
+use App\Models\Monitaz\FileMr\FileMr;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,27 +24,37 @@ class MRController extends Controller
     }
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'post_ids' => 'required|string',
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+            'model' => 'required',
         ]);
-        $postIds = preg_split("/\r\n|\n|\r/", $request->post_ids);
-        $fileName = $request->name . "_" . now()->timestamp.'.xlsx';
+
+        $model = $request->get('model');
+
+        $uploadedFile = $request->file('file');
+        $uniqueFileName = time() . '_' . $uploadedFile->getClientOriginalName();
+        $path = $uploadedFile->storeAs('uploads', $uniqueFileName, 'public');
+
         $data = [
-            'name' => $request->name,
-            'post_ids' => json_encode($postIds),
-            'file_name' => $fileName,
+            'name' => $uniqueFileName,
+            'status' => 1,
+            'model' => $model,
         ];
 
-        $reaction = FileMr::create($data);
-        $result = array_map(function ($item) {
-            return [$item];
-        }, $postIds);
-        Excel::store(new ReactionExport($result), $fileName);
+        $fileMr = FileMr::create($data);
+
+        $response = Http::post('http://localhost:5000/predict', [
+            'file_name' => $uniqueFileName,
+        ]);
+
+        $data = $response->json();
+
+        $fileMr->update(["status" => 2]);
+
         return response()->json([
             'status' => true,
             'message' => 'created successfully',
-            'data' => $reaction
+            'data' => $data
         ], 200);
 
     }
@@ -69,6 +80,12 @@ class MRController extends Controller
         $this->validate($request, [
             'file_name' => 'required'
         ]);
-        return Storage::download($request->file_name);
+        $path = $request->get('file_name');
+
+        if (Storage::disk('public')->exists($path)) {
+            return Storage::disk('public')->download($path);
+        }
+
+        return response()->json(['error' => 'File not found'], 404);
     }
 }
